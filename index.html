@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cat, Dog, Horse Classifier</title>
+    <title>Cat, Dog, and Horse Classifier</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
 </head>
 <body>
     <div class="container">
-        <h1>Cat, Dog Horse Classifier</h1>
+        <h1>Cat, Dog, and Horse Classifier</h1>
         <div class="upload-section">
             <button onclick="triggerFileInput()" class="upload-button">UPLOAD IMAGE</button>
             <input type="file" accept="image/*" id="imageUpload" onchange="previewImage()" style="display: none;">
@@ -23,18 +23,19 @@
 
     <script>
         let model;
+        let imageUploaded = false;
 
         async function loadModel() {
             model = await tf.loadGraphModel('tfjs_model/model.json');
         }
 
         async function predictImage() {
-            const imageElement = document.getElementById('imagePreview');
-            if (!imageElement.src) {
+            if (!imageUploaded) {
                 document.getElementById('prediction').innerText = 'Please upload an image first.';
                 return;
             }
 
+            const imageElement = document.getElementById('imagePreview');
             const image = await createImageBitmap(imageElement);
 
             const tensor = tf.browser.fromPixels(image)
@@ -56,13 +57,14 @@
 
         function previewImage() {
             const file = document.getElementById('imageUpload').files[0];
-            const reader = new FileReader();
-
-            reader.onload = function(event) {
-                document.getElementById('imagePreview').src = event.target.result;
-            };
-
             if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function(event) {
+                    document.getElementById('imagePreview').src = event.target.result;
+                    imageUploaded = true; // Set flag to true when an image is uploaded
+                };
+
                 reader.readAsDataURL(file);
             }
         }
