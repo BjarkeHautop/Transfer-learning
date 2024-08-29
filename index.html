@@ -21,7 +21,7 @@
             const image = await createImageBitmap(imageElement);
 
             const tensor = tf.browser.fromPixels(image)
-                             .resizeNearestNeighbor([224, 224]) // Adjust size as needed
+                             .resizeNearestNeighbor([120, 120]) // Adjust size as needed
                              .expandDims()
                              .toFloat()
                              .div(tf.scalar(255.0));
