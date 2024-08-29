@@ -1,13 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cat, Dog, or Horse Classifier</title>
+    <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
 </head>
 <body>
-    <h1>Cat, Dog, or Horse Classifier</h1>
-    <input type="file" accept="image/*" id="imageUpload" onchange="predictImage()">
-    <p id="prediction">Prediction will appear here</p>
+    <div class="container">
+        <h1>Cat, Dog, or Horse Classifier</h1>
+        <div class="upload-section">
+            <input type="file" accept="image/*" id="imageUpload" onchange="previewImage()">
+            <label for="imageUpload" class="upload-button">Upload Image</label>
+            <div id="imagePreviewContainer">
+                <img id="imagePreview" src="" alt="Image Preview">
+            </div>
+        </div>
+        <button onclick="predictImage()" class="predict-button">Classify Image</button>
+        <p id="prediction">Prediction will appear here</p>
+    </div>
 
     <script>
         let model;
@@ -17,7 +29,12 @@
         }
 
         async function predictImage() {
-            const imageElement = document.getElementById('imageUpload').files[0];
+            const imageElement = document.getElementById('imagePreview');
+            if (!imageElement.src) {
+                document.getElementById('prediction').innerText = 'Please upload an image first.';
+                return;
+            }
+
             const image = await createImageBitmap(imageElement);
 
             const tensor = tf.browser.fromPixels(image)
@@ -31,6 +48,19 @@
             const classes = ['Cat', 'Dog', 'Horse'];
             const maxIndex = predictions.indexOf(Math.max(...predictions));
             document.getElementById('prediction').innerText = `Prediction: ${classes[maxIndex]}`;
+        }
+
+        function previewImage() {
+            const file = document.getElementById('imageUpload').files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(event) {
+                document.getElementById('imagePreview').src = event.target.result;
+            };
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
         }
 
         loadModel();
