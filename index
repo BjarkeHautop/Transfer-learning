@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cat, Dog, or Horse Classifier</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+</head>
+<body>
+    <h1>Cat, Dog, or Horse Classifier</h1>
+    <input type="file" accept="image/*" id="imageUpload" onchange="predictImage()">
+    <p id="prediction">Prediction will appear here</p>
+
+    <script>
+        let model;
+
+        async function loadModel() {
+            model = await tf.loadGraphModel('tfjs_model/model.json');
+        }
+
+        async function predictImage() {
+            const imageElement = document.getElementById('imageUpload').files[0];
+            const image = await createImageBitmap(imageElement);
+
+            const tensor = tf.browser.fromPixels(image)
+                             .resizeNearestNeighbor([224, 224]) // Adjust size as needed
+                             .expandDims()
+                             .toFloat()
+                             .div(tf.scalar(255.0));
+
+            const predictions = await model.predict(tensor).data();
+
+            const classes = ['Cat', 'Dog', 'Horse'];
+            const maxIndex = predictions.indexOf(Math.max(...predictions));
+            document.getElementById('prediction').innerText = `Prediction: ${classes[maxIndex]}`;
+        }
+
+        loadModel();
+    </script>
+</body>
+</html>
