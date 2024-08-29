@@ -63,6 +63,7 @@
                 reader.onload = function(event) {
                     document.getElementById('imagePreview').src = event.target.result;
                     imageUploaded = true; // Set flag to true when an image is uploaded
+                    document.getElementById('prediction').innerText = ''; // Clear previous prediction message
                 };
 
                 reader.readAsDataURL(file);
