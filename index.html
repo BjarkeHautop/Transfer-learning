@@ -29,4 +29,45 @@
         }
 
         async function predictImage() {
-            const imageElement = document.getElementByI
+            const imageElement = document.getElementById('imagePreview');
+            if (!imageElement.src) {
+                document.getElementById('prediction').innerText = 'Please upload an image first.';
+                return;
+            }
+
+            const image = await createImageBitmap(imageElement);
+
+            const tensor = tf.browser.fromPixels(image)
+                             .resizeNearestNeighbor([120, 120]) // Adjust size as needed
+                             .expandDims()
+                             .toFloat()
+                             .div(tf.scalar(255.0));
+
+            const predictions = await model.predict(tensor).data();
+
+            const classes = ['Cat', 'Dog', 'Horse'];
+            const maxIndex = predictions.indexOf(Math.max(...predictions));
+            document.getElementById('prediction').innerText = `Prediction: ${classes[maxIndex]}`;
+        }
+
+        function triggerFileInput() {
+            document.getElementById('imageUpload').click();
+        }
+
+        function previewImage() {
+            const file = document.getElementById('imageUpload').files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(event) {
+                document.getElementById('imagePreview').src = event.target.result;
+            };
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+
+        loadModel();
+    </script>
+</body>
+</html>
