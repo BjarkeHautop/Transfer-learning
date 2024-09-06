@@ -47,8 +47,13 @@
             const predictions = await model.predict(tensor).data();
 
             const classes = ['Cat', 'Dog', 'Horse'];
-            const maxIndex = predictions.indexOf(Math.max(...predictions));
-            document.getElementById('prediction').innerText = `Prediction: ${classes[maxIndex]}`;
+            let predictionText = "Prediction Probabilities:<br>";
+
+            predictions.forEach((probability, index) => {
+                predictionText += `${classes[index]}: ${(probability * 100).toFixed(2)}%<br>`;
+            });
+
+            document.getElementById('prediction').innerHTML = predictionText;
         }
 
         function triggerFileInput() {
